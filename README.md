@@ -100,7 +100,7 @@ console.log(myModuleVariable2.initialOf(String) === String);
 
 :black_square_button: Read only (block the object's setter).
 
-:black_square_button: Allow to pass an object with the 'onChange' method. This become read only automatically as the reference will be immutable. Also we may avoid any safety checks as to detect any changes is passed object responsibility. In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call.
+:black_square_button: Allow to pass an object with the onChange method. This become read only automatically as the reference will be immutable. Also we may avoid any safety checks as to detect any changes is passed object responsibility. In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call.
 
 :black_square_button: Allow to pass a replacer function as the second argument. The replacer function allows you to transform or filter the values which are not accepted now because they cannot be stringified by JSON.stringify function.
 
