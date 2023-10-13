@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"noImplicitAny": false,
+		"noImplicitThis": false,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"allowJs": false,
+		"sourceMap": true,
+		"lib": ["ES2022"],
+		"baseUrl": "."
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"clearMocks": true,
+	"coveragePathIgnorePatterns": ["/node_modules/"],
+	"moduleFileExtensions": ["ts", "js", "json"],
+	"testEnvironment": "jsdom",
+	"testMatch": ["**/src/**/?(*.)+(spec|test).[tj]s?(x)"],
+	"transform": {
+		"\\.(ts)$": "ts-jest"
+	}
+}
