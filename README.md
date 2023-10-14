@@ -19,9 +19,9 @@ This library main purpose is to keep the code lean and in boundaries.
 
 # Problems to solve
 
-As a developer, I want:
+## As a developer, I want to
 
-- To read and set the exported module variable (both way communication).
+### To read and set the exported module variable (both way communication)
 
 ```ts
 // someModuleWithExportedObservable.ts
@@ -52,7 +52,7 @@ console.log(moduleVariable.get());
  */
 ```
 
-- To lock the object against changes.
+### To lock the object against changes
 
 ```ts
 import { Observable } from 'module-state';
@@ -69,7 +69,7 @@ try {
  */
 ```
 
-- To lock the object but allow internal changes.
+### To lock the object but allow internal changes
 
 ```ts
 // someModuleWithExportedObservable.ts
@@ -111,7 +111,7 @@ console.log(`moduleVariable is set to ${moduleVariable.get()}`);
  */
 ```
 
-- To wait until next "promised" modifitication.
+### To wait until next "promised" modifitication
 
 ```ts
 import { Observable } from 'module-state';
@@ -129,7 +129,7 @@ moduleVariable.get().b.push() = 123;
  */
 ```
 
-- To react on any modification.
+### To react on any modification
 
 ```ts
 import { Observable } from 'module-state';
@@ -150,7 +150,7 @@ moduleVariable.set({a: 1, b: [1, 2, 125]});
  */
 ```
 
-- To call `typeOf` and `instanceOf` methods upon the observable's value.
+### To call `typeOf` and `instanceOf` methods upon the observable's value
   
 ```ts
 import { Observable } from 'module-state';
