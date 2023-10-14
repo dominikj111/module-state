@@ -5,7 +5,7 @@
 [![dependency status](https://deps.rs/crate/autocfg/1.1.0/status.svg)](https://deps.rs/crate/autocfg/1.1.0)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
-# What is it?
+## What is it?
 
 A simple way to export and observe the state of module variable.
 
@@ -172,7 +172,7 @@ console.log(moduleVariableString.instanceOf(String));
  */
 ```
 
-# The other nuances
+## The other nuances
 
 - The Observable is strictly typed.
 
@@ -237,7 +237,7 @@ try {
  */
 ```
 
-# Possible improvements when needed
+## Possible improvements when needed
 
 :black_square_button: Add bundling to import from CDN (vanilla js) -> umd, esm
 
