@@ -174,7 +174,7 @@ console.log(moduleVariableString.instanceOf(String));
 
 ## The other nuances
 
-- The Observable is strictly typed.
+### The Observable is strictly typed
 
 ```ts
 try {
@@ -195,7 +195,7 @@ new Observable({}).set({ a: 4, b: ["1a", "2a", "3a"] });
  */
 ```
 
-- `strictlyEditable` method will not allow to mark the observable as read only. So nobody will change the observable's behaviour.
+### `strictlyEditable` method will not allow to mark the observable as read only. So nobody will change the observable's behaviour
 
 ```ts
 export const moduleVariable = new Observable("").strictlyEditable();
@@ -211,13 +211,13 @@ try {
 moduleVariable.isReadOnly() === false;
 ```
 
-- `seal` method returns strictlyEditable observable.
+### `seal` method returns strictlyEditable observable
 
-- if the observable is read only, it will throw an error when `seal` is called upon it.
+### If the observable is read only, it will throw an error when `seal` is called upon it
 
-- if the observable is read only, `readOnly` method may be called without any errors multiple times.
+### If the observable is read only, `readOnly` method may be called without any errors multiple times
 
-- Initial value has to be defined (not null nor undefined is allowed).
+### Initial value has to be defined (not null nor undefined is allowed)
 
 ```ts
 import { Observable } from 'module-state';
