@@ -19,23 +19,7 @@ This library main purpose is to keep the code lean and in boundaries.
 
 # Problems to solve
 
-```ts
-// someModuleWithObservables.ts
-import { Observable } from 'module-state';
-
-export const moduleVariable1 = new Observable(-1);
-export const moduleVariable2 = new Observable("Hello");
-export const moduleVariable3 = new Observable({ a: 1 }); // only objects which can be stringified
-export const moduleVariable4 = new Observable(true).readOnly();
-
-const editableModuleVariable1 = moduleVariable1.seal();
-
-export function doSomething(value: number) {
-    editableModuleVariable1.set(value);
-}
-```
-
-As a develoer, I want:
+As a developer, I want:
 
 - To read and set the exported module variable (both way communication).
 
