@@ -16,6 +16,8 @@
     "observable",
     "state",
     "module",
+    "readonly",
+    "sealable",
     "module-state",
     "Deno",
     "Node",

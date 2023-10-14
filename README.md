@@ -19,72 +19,239 @@ This library main purpose is to keep the code lean and in boundaries.
 
 # Problems to solve
 
-As a develoer, I want:
-
-- To read and react on changes of the exported module variable.
-
 ```ts
-// observableModule.ts
+// someModuleWithObservables.ts
 import { Observable } from 'module-state';
 
-export const myModuleVariable1 = new Observable(-1);
-export const myModuleVariable2 = new Observable("Hello");
-export const myModuleVariable3 = new Observable<T>({ a: 1 }); // only objects which can be stringified
-export const myModuleVariable4 = new Observable(true);
+export const moduleVariable1 = new Observable(-1);
+export const moduleVariable2 = new Observable("Hello");
+export const moduleVariable3 = new Observable({ a: 1 }); // only objects which can be stringified
+export const moduleVariable4 = new Observable(true).readOnly();
 
-try {
-    new Observable(undefined); // throws an error
-} catch (e) {  console.err("undefined is not accepted"); }
-
-try {
-    new Observable(null); // throws an error
-} catch (e) {  console.err("null is not accepted"); }
+const editableModuleVariable1 = moduleVariable1.seal();
 
 export function doSomething(value: number) {
-    myModuleVariable1.set(value);
-    myModuleVariable3.set({ a: 1, b: [1, 2, value] })
+    editableModuleVariable1.set(value);
+}
+```
+
+As a develoer, I want:
+
+- To read and set the exported module variable (both way communication).
+
+```ts
+// someModuleWithExportedObservable.ts
+import { Observable } from 'module-state';
+
+export const moduleVariable = new Observable("");
+
+moduleVariable.set("Hello");
+```
+
+```ts
+// otherModule.ts
+import { moduleVariable } from './someModuleWithExportedObservable';
+
+if (moduleVariable.hasBeenUpdated()) {
+    console.log("moduleVariable has been modified");
+}
+
+moduleVariable.set(`${moduleVariable.get()} world!`);
+
+console.log(moduleVariable.get());
+
+
+/** It will print:
+ *
+ * "moduleVariable has been modified"
+ * "Hello world!"
+ */
+```
+
+- To lock the object against changes.
+
+```ts
+import { Observable } from 'module-state';
+
+export const moduleVariable = new Observable(true).readOnly();
+
+try {
+    moduleVariable.set(false); // throws an error
+} catch (e) {  console.log("read only Observable cannot be set"); }
+
+/** It will print:
+ *
+ * "read only Observable cannot be set"
+ */
+```
+
+- To lock the object but allow internal changes.
+
+```ts
+// someModuleWithExportedObservable.ts
+import { Observable } from 'module-state';
+
+export const moduleVariable = new Observable(3);
+
+const editableModuleVariable = moduleVariable.seal();
+
+export function doSomething(value: number) {
+    editableModuleVariable.set(2 * value);
 }
 ```
 
 ```ts
 // otherModule.ts
-import { 
-    myModuleVariable1, 
-    myModuleVariable2, 
-    myModuleVariable3, 
-    myModuleVariable4, 
-    doSomething 
-} from './observableModule';
+import { moduleVariable, doSomething } from './someModuleWithExportedObservable';
 
-myModuleVariable1.onChange(v => console.log(`myModuleVariable1 is now set to ${v}`));
+if (moduleVariable.isReadOnly()) {
+    console.log("moduleVariable is read only variable");
+}
 
-console.log(myModuleVariable2.get() + " world");
-console.log(myModuleVariable2.hasBeenUpdated() ? "myModuleVariable2 is initial" : "");
+console.log(`moduleVariable is set to ${moduleVariable.get()}`);
 
-myModuleVariable3.next()
-    .then(v => 
-        console.log(
-            `myModuleVariable3 b[2] contains ${v.b[2]}`, 
-            myModuleVariable3.hasBeenUpdated() ? "" : " and it is not initial"
-        )
-    );
+try {
+    moduleVariable.set(4);
+} catch (e) {  console.log("moduleVariable cannot be externally set"); }
 
-console.log(myModuleVariable3.hasBeenUpdated() ? "myModuleVariable3 is initial" : "");
+doSomething(5);
 
-doSomething(23);
+console.log(`moduleVariable is set to ${moduleVariable.get()}`);
 
-console.log(myModuleVariable2.typeOf());
-console.log(myModuleVariable2.initialOf(String) === String);
+/** It will print:
+ *
+ * "moduleVariable is read only variable"
+ * "moduleVariable is set to 3"
+ * "moduleVariable cannot be externally set"
+ * "moduleVariable is set to 10"
+ */
+```
+
+- To wait until next "promised" modifitication.
+
+```ts
+import { Observable } from 'module-state';
+
+export const moduleVariable = new Observable({a: 1, b: [1, 2]});
+
+moduleVariable.next()
+    .then(v => console.log(`moduleVariable b[2] contains ${v.b[2]}`));
+
+moduleVariable.get().b.push() = 123;
 
 /** It will print:
  * 
- * "Hello world"
- * "myModuleVariable2 is initial"
- * "myModuleVariable3 is initial"
- * "myModuleVariable1 is now set to 23"
- * "myModuleVariable3 b[2] contains 23 and it is not 
- * "String"
+ * "moduleVariable b[2] contains 123"
+ */
+```
+
+- To react on any modification.
+
+```ts
+import { Observable } from 'module-state';
+
+export const moduleVariable = new Observable({a: 1, b: [1, 2]});
+
+moduleVariable.onChange(v => console.log(`moduleVariable b[2] contains ${v.b[2]}`));
+
+moduleVariable.get().b.push() = 123;
+moduleVariable.get().b[2] = 124;
+moduleVariable.set({a: 1, b: [1, 2, 125]});
+
+/** It will print:
+ * 
+ * "moduleVariable b[2] contains 123"
+ * "moduleVariable b[2] contains 124"
+ * "moduleVariable b[2] contains 125"
+ */
+```
+
+- To call `typeOf` and `instanceOf` methods upon the observable's value.
+  
+```ts
+import { Observable } from 'module-state';
+
+const moduleVariableNumber = new Observable(Number(3));
+const moduleVariableString = new Observable("Hello");
+
+console.log(moduleVariableNumber.typeOf());
+console.log(moduleVariableNumber.instanceOf(Number));
+
+console.log(moduleVariableString.typeOf());
+console.log(moduleVariableString.instanceOf(String));
+
+/**
+ * It will print:
+ * 
+ * "number"
  * true
+ * "string"
+ * true
+ */
+```
+
+# The other nuances
+
+- The Observable is strictly typed.
+
+```ts
+try {
+    new Observable(-1).set("");
+} catch (e) {  console.log("Numeric Observable cannot be set as a string"); }
+
+try {
+    new Observable(true).set({});
+} catch (e) {  console.log("Boolean Observable cannot be set an object"); }
+
+// not any type checking is performed for objects at runtime
+new Observable({}).set({ a: 4, b: ["1a", "2a", "3a"] });
+
+/** It will print:
+ * 
+ * "Numeric Observable cannot be set as a string"
+ * "Boolean Observable cannot be set an object"
+ */
+```
+
+- `strictlyEditable` method will not allow to mark the observable as read only. So nobody will change the observable's behaviour.
+
+```ts
+export const moduleVariable = new Observable("").strictlyEditable();
+
+try {
+    moduleVariable.readOnly();
+} catch (e) {  console.log("moduleVariable cannot be set as read only"); }
+
+try {
+    moduleVariable.seal();
+} catch (e) {  console.log("moduleVariable cannot be sealed"); }
+
+moduleVariable.isReadOnly() === false;
+```
+
+- `seal` method returns strictlyEditable observable.
+
+- if the observable is read only, it will throw an error when `seal` is called upon it.
+
+- if the observable is read only, `readOnly` method may be called without any errors multiple times.
+
+- Initial value has to be defined (not null nor undefined is allowed).
+
+```ts
+import { Observable } from 'module-state';
+
+try {
+    new Observable(undefined); // throws an error
+} catch (e) {  console.log("undefined is not accepted as an initial value"); }
+
+try {
+    new Observable(null); // throws an error
+} catch (e) {  console.log("null is not accepted as an initial value"); }
+
+/** It will print:
+ *
+ * "undefined is not accepted as an initial value"
+ * "null is not accepted as an initial value"
  */
 ```
 
@@ -98,10 +265,6 @@ console.log(myModuleVariable2.initialOf(String) === String);
 
 :black_square_button: Automatic testing and linting
 
-:black_square_button: Read only (block the object's setter).
-
-:black_square_button: Allow to pass an object with the onChange method. This become read only automatically as the reference will be immutable. Also we may avoid any safety checks as to detect any changes is passed object responsibility. In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call.
+:black_square_button: Allow to pass class/function object with it's own onChange method. This become read only automatically as the reference will be immutable. Also we may avoid any safety checks because to detect any changes is passed object responsibility. In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call.
 
 :black_square_button: Allow to pass a replacer function as the second argument. The replacer function allows you to transform or filter the values which are not accepted now because they cannot be stringified by JSON.stringify function.
-
-:black_square_button: Allow to ommit safety checks, so there can be stored an object with circular dependency (non serializable), BitInt or Symbol values. To support this, the check function (kind of) is needed to pass. This may be same as replacer function mentioned in previous improvement. This also need to be reflected in the comparison process (what detects changes).
