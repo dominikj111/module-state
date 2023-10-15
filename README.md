@@ -178,16 +178,13 @@ console.log(moduleVariableString.instanceOf(String));
 ### `get` returns
 
 ```ts
-interface SimpleObject {
-    a: string;
-    b: number[];
-}
+typeof newnew Observable("").get() === "string";
+typeof new Observable(-1).get() === "number";
+Observable(new Number(2)).get() instanceof Number;
+typeof new Observable(true).get() === "boolean";
 
-const observable1: string = new Observable("").get();
-const observable2: number = new Observable(-1).get();
-const observable3: number = new Observable(Number(2)).get();
-const observable4: boolen = new Observable(true).get();
-const observable4: SimpleObject = new Observable({ a: "", b: [1, 2] }).get(); // returns a reference to the object
+// returns a reference to the object
+typeof new Observable({ a: "", b: [1, 2] }).get() === "object";
 ```
 
 ### The Observable is strictly typed
