@@ -202,20 +202,45 @@ export const moduleVariable = new Observable("").strictlyEditable();
 
 try {
     moduleVariable.readOnly();
-} catch (e) {  console.log("moduleVariable cannot be set as read only"); }
+} catch (e) { console.log("moduleVariable cannot be set as read only"); }
 
 try {
     moduleVariable.seal();
-} catch (e) {  console.log("moduleVariable cannot be sealed"); }
+} catch (e) { console.log("moduleVariable cannot be sealed"); }
 
 moduleVariable.isReadOnly() === false;
 ```
 
 ### `seal` method returns strictlyEditable observable
 
+```ts
+const moduleVariable = new Observable("");
+const editableModuleVariable = moduleVariable.seal();
+
+try {
+    editableModuleVariable.readOnly();
+} catch (e) { console.log("strictlyEditable Observable cannot be set as read only"); }
+```
+
 ### If the observable is read only, it will throw an error when `seal` is called upon it
 
+```ts
+const moduleVariable = new Observable("").readOnly();
+
+try {
+    moduleVariable.seal();
+} catch (e) { console.log("read only observable cannot be sealed"); }
+```
+
 ### If the observable is read only, `readOnly` method may be called without any errors multiple times
+
+```ts
+const moduleVariable = new Observable("").readOnly();
+
+moduleVariable.readOnly();
+moduleVariable.readOnly();
+moduleVariable.readOnly();
+```
 
 ### Initial value has to be defined (not null nor undefined is allowed)
 
