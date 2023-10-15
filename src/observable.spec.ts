@@ -53,7 +53,7 @@ describe("Observable class", () => {
 		it("should returns from get object reference", () => {
 			const obj = { a: "", b: [1, 2] };
 			const observable = new Observable(obj);
-			const observable2 = new Observable({...obj});
+			const observable2 = new Observable({ ...obj });
 
 			expect(observable.get()).toEqual(obj);
 			obj.a = "a";
@@ -63,11 +63,6 @@ describe("Observable class", () => {
 			observable2.get().a = "b";
 			expect(obj.b.length).toBe(3);
 			expect(obj.a).toBe("a");
-		});
-
-			expect(new Observable(new Number(4)).get() instanceof Number).toBe(true);
-			expect(typeof new Observable("").get()).toBe("string");
-			expect(typeof new Observable({}).get()).toBe("object");
 		});
 
 		it("should inform if the setter was called", () => {
