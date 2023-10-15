@@ -117,9 +117,10 @@ import { Observable } from 'module-state';
 export const moduleVariable = new Observable({a: 1, b: [1, 2]});
 
 moduleVariable.next()
-    .then(v => console.log(`moduleVariable b[2] contains ${v.b[2]}`));
+    .then(v => console.log(`moduleVariable b[2] contains ${v.b[v.b.length - 1]}`));
 
 moduleVariable.get().b.push() = 123;
+moduleVariable.get().b.push() = 124;
 
 /** It will print:
  * 
