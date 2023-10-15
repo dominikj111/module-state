@@ -149,7 +149,7 @@ moduleVariable.set({a: 1, b: [1, 2, 125]});
  */
 ```
 
-### To call `typeOf` and `instanceOf` methods upon the observable's value
+### To call `typeOf` and `instanceOf` methods upon the Observable's value
   
 ```ts
 import { Observable } from 'module-state';
@@ -211,7 +211,7 @@ new Observable({}).set({ a: 4, b: ["1a", "2a", "3a"] });
  */
 ```
 
-### `strictlyEditable` method will not allow to mark the observable as read only. So nobody will change the observable's behaviour
+### `strictlyEditable` method will not allow to mark the Observable as read only. So nobody will change the Observable's behaviour
 
 ```ts
 export const moduleVariable = new Observable("").strictlyEditable();
@@ -227,7 +227,7 @@ try {
 moduleVariable.isReadOnly() === false;
 ```
 
-### `seal` method returns strictlyEditable observable
+### `seal` method returns strictlyEditable Observable
 
 ```ts
 const moduleVariable = new Observable("");
@@ -238,17 +238,17 @@ try {
 } catch (e) { console.log("strictlyEditable Observable cannot be set as read only"); }
 ```
 
-### If the observable is read only, it will throw an error when `seal` is called upon it
+### If the Observable is read only, it will throw an error when `seal` is called upon it
 
 ```ts
 const moduleVariable = new Observable("").readOnly();
 
 try {
     moduleVariable.seal();
-} catch (e) { console.log("read only observable cannot be sealed"); }
+} catch (e) { console.log("read only Observable cannot be sealed"); }
 ```
 
-### If the observable is read only, `readOnly` method may be called without any errors multiple times
+### If the Observable is read only, `readOnly` method may be called without any errors multiple times
 
 ```ts
 const moduleVariable = new Observable("").readOnly();
