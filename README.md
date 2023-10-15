@@ -203,11 +203,11 @@ export const moduleVariable = new Observable("").strictlyEditable();
 
 try {
     moduleVariable.readOnly();
-} catch (e) { console.log("moduleVariable cannot be set as read only"); }
+} catch (e) { console.log("strictlyEditable Observable cannot be set as read only"); }
 
 try {
     moduleVariable.seal();
-} catch (e) { console.log("moduleVariable cannot be sealed"); }
+} catch (e) { console.log("strictlyEditable Observable cannot be sealed"); }
 
 moduleVariable.isReadOnly() === false;
 ```
