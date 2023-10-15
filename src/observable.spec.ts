@@ -44,6 +44,32 @@ describe("Observable class", () => {
 			expect(observable.get()).toBe(42);
 		});
 
+		it("should returns from get same type/instance as provided", () => {
+			expect(new Observable(new Number(4)).get() instanceof Number).toBe(true);
+			expect(typeof new Observable("").get()).toBe("string");
+			expect(typeof new Observable({}).get()).toBe("object");
+		});
+
+		it("should returns from get object reference", () => {
+			const obj = { a: "", b: [1, 2] };
+			const observable = new Observable(obj);
+			const observable2 = new Observable({...obj});
+
+			expect(observable.get()).toEqual(obj);
+			obj.a = "a";
+			expect(observable.get()).toEqual(obj);
+
+			observable2.get().b.push(3);
+			observable2.get().a = "b";
+			expect(obj.b.length).toBe(3);
+			expect(obj.a).toBe("a");
+		});
+
+			expect(new Observable(new Number(4)).get() instanceof Number).toBe(true);
+			expect(typeof new Observable("").get()).toBe("string");
+			expect(typeof new Observable({}).get()).toBe("object");
+		});
+
 		it("should inform if the setter was called", () => {
 			const observable = new Observable(-1);
 			expect(observable.hasBeenUpdated()).toBe(false);
@@ -162,6 +188,8 @@ describe("Observable class", () => {
 		});
 
 		it("seal cannot be called upon read only Observable", () => {});
+
+		it("strictlyEditable cannot be called if the Observable is read only", () => {});
 	});
 
 	it("triggers the onChange event when setter has been called", () => {
