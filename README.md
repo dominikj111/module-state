@@ -175,6 +175,21 @@ console.log(moduleVariableString.instanceOf(String));
 
 ## The other nuances
 
+### `get` returns
+
+```ts
+interface SimpleObject {
+    a: string;
+    b: number[];
+}
+
+const observable1: string = new Observable("").get();
+const observable2: number = new Observable(-1).get();
+const observable3: number = new Observable(Number(2)).get();
+const observable4: boolen = new Observable(true).get();
+const observable4: SimpleObject = new Observable({ a: "", b: [1, 2] }).get(); // returns a reference to the object
+```
+
 ### The Observable is strictly typed
 
 ```ts
@@ -273,6 +288,6 @@ try {
 
 :black_square_button: Automatic testing and linting
 
-:black_square_button: Allow to pass class/function object with it's own onChange method. This become read only automatically as the reference will be immutable. Also we may avoid any safety checks because to detect any changes is passed object responsibility. In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call.
+:black_square_button: Allow to pass class/function object with it's own onChange method. This become read only (sealed) automatically (Object changes will be done through object's properties). In this case, when onChange is triggered, the Observable will return true as a result of hasBeenUpdated method call. `get` returns reference to the object itself in this case.
 
 :black_square_button: Allow to pass a replacer function as the second argument. The replacer function allows you to transform or filter the values which are not accepted now because they cannot be stringified by JSON.stringify function.
