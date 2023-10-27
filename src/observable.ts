@@ -1,12 +1,14 @@
+import { CompareType, same } from "simple-comparator";
+
 const errorMessages = {
 	constructorTypeMismatch: "Constructor's argument value type is not compatible with expected type",
 	setTypeMismatch: "Setter's argument value type is not compatible with expected type",
 	dataTypeOriginMismatch: "Data type of the origin value is not compatible with the provided value",
 };
 
-export interface Observable<T> {}
+export interface Observable<T extends CompareType> {}
 
-export class ObservableState<T> implements Observable<T> {
+export class ObservableState<T extends CompareType> implements Observable<T> {
 	private value: T;
 	private valueHasBeenUpdated: boolean = false;
 	private onChangeCallbacks: ((_: T) => void)[] = [];
@@ -24,6 +26,10 @@ export class ObservableState<T> implements Observable<T> {
 		}
 
 		this.confirmOriginDataType(value);
+
+		if (same(value, this.value)) {
+			return;
+		}
 
 		this.value = value;
 		this.valueHasBeenUpdated = true;

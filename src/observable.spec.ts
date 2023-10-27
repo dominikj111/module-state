@@ -1,4 +1,5 @@
-import { ObservableState, Observable } from "./observable";
+import { ObservableState } from "../index";
+import { Comparable, CompareType } from "simple-comparator";
 
 describe("Observable class", () => {
 	describe("Accepts single basic data type argument in it's contructor", () => {
@@ -27,6 +28,7 @@ describe("Observable class", () => {
 
 		it("Throws an error when Symbol is passed as an argument", () => {
 			expect(() => {
+				// @ts-expect-error: Argument of type 'symbol' is not assignable to parameter of type 'CompareType'. Ok for testing.
 				new ObservableState(Symbol());
 			}).toThrow();
 		});
@@ -34,20 +36,22 @@ describe("Observable class", () => {
 
 	describe("Offers an interface to get basic informations", () => {
 		it("Allows to set and get current state", () => {
-			const observable = new ObservableState(-1);
+			const observable = new ObservableState<number>(-1);
 			observable.set(42);
 			expect(observable.get()).toBe(42);
 		});
 
 		it("`set` throws when passing undefined, null or Symbol same as the constructor", () => {
-			const observable = new ObservableState<unknown>({});
+			const observable = new ObservableState({});
+			// @ts-expect-error: Argument of type 'undefined' is not assignable to parameter of type '{}', ok for testing.
 			expect(() => observable.set(undefined)).toThrow();
+			// @ts-expect-error: Argument of type 'null' is not assignable to parameter of type '{}', ok for testing.
 			expect(() => observable.set(null)).toThrow();
 			expect(() => observable.set(Symbol())).toThrow();
 		});
 
 		it("`get` returns same type/instance as provided", () => {
-			expect(new ObservableState(new Number(4)).get() instanceof Number).toBe(true);
+			expect(new ObservableState(new Number(4) as CompareType).get() instanceof Number).toBe(true);
 			expect(typeof new ObservableState("").get()).toBe("string");
 			expect(typeof new ObservableState({}).get()).toBe("object");
 		});
@@ -120,20 +124,20 @@ describe("Observable class", () => {
 			}).toThrow();
 
 			expect(() => {
-				new ObservableState(new String("text")).set("text");
+				new ObservableState(new String("text") as CompareType).set("text");
 			}).toThrow();
 
 			expect(() => {
-				new ObservableState(new Number(4)).set(1);
+				new ObservableState(new Number(4) as CompareType).set(1);
 			}).toThrow();
 
 			expect(() => {
-				new ObservableState(new Boolean(1)).set(false);
+				new ObservableState(new Boolean(1) as CompareType).set(false);
 			}).toThrow();
 		});
 
 		it("Informs if the setter was called", () => {
-			const observable = new ObservableState(-1);
+			const observable = new ObservableState<number>(-1);
 			expect(observable.hasBeenUpdated()).toBe(false);
 			observable.set(42);
 			expect(observable.hasBeenUpdated()).toBe(true);
@@ -160,7 +164,7 @@ describe("Observable class", () => {
 		});
 
 		it("Contains `instanceOf` method returning correct result for String/string as the vanilla js `instanceof`", () => {
-			const observableStringObject = new ObservableState(new String("Some text"));
+			const observableStringObject = new ObservableState(new String("Some text") as CompareType);
 			expect(observableStringObject.instanceOf(String)).toBe(observableStringObject.get() instanceof String);
 			expect(observableStringObject.instanceOf(String)).toBe(true);
 
@@ -191,20 +195,49 @@ describe("Observable class", () => {
 		});
 
 		it("Contains `instanceOf` method returning correct result for class object as the vanilla js `instanceof`", () => {
-			class SomeClass {}
-			const objectOfSomeClass = new ObservableState(new SomeClass());
+			class SomeClass implements Comparable<SomeClass> {
+				equals(_other: SomeClass): boolean {
+					return false;
+				}
+			}
+			const objectOfSomeClass = new ObservableState(new SomeClass() as CompareType);
 			expect(objectOfSomeClass.instanceOf(SomeClass)).toBe(true);
 		});
 	});
 
-	// describe("recognizes object's changes well", () => {
-		// it contains own object comparison utility
-		// copy the comparison from cache-wave, make it as dedicated npm module
+	describe("recognizes object's changes well", () => {
+		const originalValue = { a: 1, b: { c: [1, 2, { d: 2 }] } };
+		const nextValue = { a: 1, b: { c: [1, 22, { d: 22 }] } };
+
+		const observable = new ObservableState(JSON.parse(JSON.stringify(originalValue)));
+
+		observable.onChange(value => {
+			expect(value).toEqual({ a: 1, b: { c: [1, 22, { d: 22 }] } });
+		});
+
+		observable.set(originalValue);
+		observable.set(nextValue);
+	});
+
+	// TODO IMPLEMENT PROXY OBJECT MONITORING
+	// it("should returns from get object reference", () => {
+	// 	const obj = { a: "", b: [1, 2] };
+	// 	const observable = new Observable(obj);
+	// 	const observable2 = new Observable({ ...obj });
+
+	// 	expect(observable.get()).toEqual(obj);
+	// 	obj.a = "a";
+	// 	expect(observable.get()).toEqual(obj);
+
+	// 	observable2.get().b.push(3);
+	// 	observable2.get().a = "b";
+	// 	expect(obj.b.length).toBe(3);
+	// 	expect(obj.a).toBe("a");
 	// });
 
 	// describe("accepts only simple data types and simple objects what can by serialized by JSON.stringify function", () => {
-		// it will recongise circular dependencies
-		// the object has to be serialized by JSON.stringify so any difference between deserialized and initial will throws
+	// it will recongise circular dependencies
+	// the object has to be serialized by JSON.stringify so any difference between deserialized and initial will throws
 	// });
 
 	// describe("can be limited or locked against other modifications", () => {
@@ -296,7 +329,7 @@ describe("Observable class", () => {
 	// });
 
 	it("Triggers the onChange event when setter has been called", () => {
-		const observable = new ObservableState(-1);
+		const observable = new ObservableState<number>(-1);
 		const callback = jest.fn();
 		observable.onChange(callback);
 		observable.set(42);
@@ -304,7 +337,7 @@ describe("Observable class", () => {
 	});
 
 	it("Allow to remove onChange reaction", () => {
-		const observable = new ObservableState(-1);
+		const observable = new ObservableState<number>(-1);
 
 		const callback1 = jest.fn();
 		const callback2 = jest.fn();
@@ -326,7 +359,7 @@ describe("Observable class", () => {
 	});
 
 	it("Allows to react on Promise when setter has been called", done => {
-		const observable = new ObservableState(-1);
+		const observable = new ObservableState<number>(-1);
 
 		observable.next().then(value => {
 			expect(value).toBe(42);
