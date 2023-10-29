@@ -1,7 +1,3 @@
 {
-	"deno.enable": false,
-	"deno.lint": false,
-	"deno.unstable": false,
-	"cflint.enabled": false,
 	"jest.jestCommandLine": "./node_modules/.bin/jest"
 }

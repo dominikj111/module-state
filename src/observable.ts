@@ -1,4 +1,4 @@
-import { CompareType, same } from "simple-comparator";
+import { same, CompareType } from "simple-comparator";
 
 const errorMessages = {
 	constructorTypeMismatch: "Constructor's argument value type is not compatible with expected type",
@@ -10,7 +10,7 @@ export interface Observable<T extends CompareType> {}
 
 export class ObservableState<T extends CompareType> implements Observable<T> {
 	private value: T;
-	private valueHasBeenUpdated: boolean = false;
+	private valueHasBeenUpdated = false;
 	private onChangeCallbacks: ((_: T) => void)[] = [];
 
 	constructor(value: T) {

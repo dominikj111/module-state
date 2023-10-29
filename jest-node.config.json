@@ -1,0 +1,7 @@
+{
+	"clearMocks": true,
+	"coveragePathIgnorePatterns": ["/node_modules/"],
+	"moduleFileExtensions": ["js", "json"],
+	"testEnvironment": "node",
+	"testMatch": ["**/tests/node.test.js"]
+}
