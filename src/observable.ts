@@ -17,7 +17,25 @@ export class ObservableState<T extends CompareType> implements Observable<T> {
 		if (value === undefined || value === null || typeof value === "symbol") {
 			throw new Error(errorMessages.constructorTypeMismatch);
 		}
-		this.value = value;
+
+		if (!Array.isArray(value) && typeof value === "object") {
+			const handler = {
+				get: (target, key) => {
+					if (typeof target[key] === "object" && target[key] !== null) {
+						return new Proxy(target[key], handler);
+					}
+					return target[key];
+				},
+				set: (target, prop, value) => {
+					target[prop] = value;
+					this.triggerOnChange(this.value);
+					return true;
+				},
+			};
+			this.value = new Proxy(value, handler);
+		} else {
+			this.value = value;
+		}
 	}
 
 	set(value: T): void {

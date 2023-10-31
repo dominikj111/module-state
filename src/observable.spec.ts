@@ -205,35 +205,44 @@ describe("Observable class", () => {
 		});
 	});
 
-	describe("recognizes object's changes well", () => {
-		const originalValue = { a: 1, b: { c: [1, 2, { d: 2 }] } };
-		const nextValue = { a: 1, b: { c: [1, 22, { d: 22 }] } };
+	describe("Recognizes object's changes well", () => {
+		it("Will not trigger onChange when `set` with equal object is called", () => {
+			const originalValue = { a: 1, b: { c: [1, 2, { d: 2 }] } };
+			const observable = new ObservableState(JSON.parse(JSON.stringify(originalValue)));
+			const onChangeHandler = jest.fn();
+			observable.onChange(onChangeHandler);
+			observable.set(originalValue);
 
-		const observable = new ObservableState(JSON.parse(JSON.stringify(originalValue)));
-
-		observable.onChange(value => {
-			expect(value).toEqual({ a: 1, b: { c: [1, 22, { d: 22 }] } });
+			expect(onChangeHandler).not.toBeCalled();
 		});
 
-		observable.set(originalValue);
-		observable.set(nextValue);
+		it("Will trigger onChange when `set` with not equal object is called", () => {
+			const observable = new ObservableState({ a: 1, b: { c: [1, 2, { d: 2 }] } });
+			const onChangeHandler = jest.fn();
+			observable.onChange(onChangeHandler);
+			observable.set({ a: 1, b: { c: [1, 22, { d: 22 }] } });
+
+			expect(onChangeHandler).toBeCalledTimes(1);
+		});
+
+		it("Will trigger onChange when the object is changed externally and partially", () => {
+			const objectToTest = { a: 1, b: { c: [1, 2, { d: 2 }] } };
+			const observable = new ObservableState(objectToTest);
+			const onChangeHandler = jest.fn();
+			observable.onChange(onChangeHandler);
+
+			objectToTest.a = 2;
+			objectToTest.b.c.push(3);
+			expect(onChangeHandler).not.toBeCalled();
+
+			observable.get().a = 4;
+			objectToTest.b.c.push(5);
+			expect(onChangeHandler).toBeCalled();
+
+			// note that number 3 has been added as well as we observing the reference
+			expect(onChangeHandler).toBeCalledWith({ a: 4, b: { c: [1, 2, { d: 2 }, 3, 5] } });
+		});
 	});
-
-	// TODO IMPLEMENT PROXY OBJECT MONITORING
-	// it("should returns from get object reference", () => {
-	// 	const obj = { a: "", b: [1, 2] };
-	// 	const observable = new Observable(obj);
-	// 	const observable2 = new Observable({ ...obj });
-
-	// 	expect(observable.get()).toEqual(obj);
-	// 	obj.a = "a";
-	// 	expect(observable.get()).toEqual(obj);
-
-	// 	observable2.get().b.push(3);
-	// 	observable2.get().a = "b";
-	// 	expect(obj.b.length).toBe(3);
-	// 	expect(obj.a).toBe("a");
-	// });
 
 	// describe("accepts only simple data types and simple objects what can by serialized by JSON.stringify function", () => {
 	// it will recongise circular dependencies
