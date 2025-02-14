@@ -1,0 +1,8 @@
+{
+	"lint": {
+		"exclude": ["dist_commonjs", "dist_es6"]
+	},
+	"test": {
+		"exclude": ["tests/node.test.js"]
+	}
+}

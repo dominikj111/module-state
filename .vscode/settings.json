@@ -1,0 +1,10 @@
+{
+	"deno.enable": false,
+	"deno.lint": false,
+	"deno.unstable": [],
+	"cflint.enabled": false,
+	"jest.jestCommandLine": "./node_modules/.bin/jest",
+	"eslint.enable": true,
+	"eslint.useFlatConfig": true,
+	"eslint.validate": ["javascript", "typescript"]
+}

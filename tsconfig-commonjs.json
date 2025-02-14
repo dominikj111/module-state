@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"include": ["index.ts"],
+	"compilerOptions": {
+		"target": "ES6",
+		"module": "CommonJS",
+		"outDir": "./dist_commonjs"
+	}
+}
